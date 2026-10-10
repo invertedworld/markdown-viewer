@@ -19,7 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         for url in urls {
             pendingOpens += 1
             do {
-                try BrowserOpener.open(markdownFile: url) { [weak self] error in
+                try PreviewOpener.open(markdownFile: url) { [weak self] error in
                     if let error { self?.report(error, for: url) }
                     self?.finishOpen()
                 }
@@ -36,8 +36,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.runModal()
     }
 
-    /// When launched only to open documents, quit once the browser has received all of them.
-    /// Quitting earlier can cancel the hand-over of the file to the browser.
+    /// When launched only to open documents, quit once Preview has received all of them.
+    /// Quitting earlier can cancel the hand-over of the file to Preview.
     private func finishOpen() {
         pendingOpens -= 1
         if pendingOpens == 0 && window == nil {
@@ -63,7 +63,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.regular)
 
         let text = NSTextField(wrappingLabelWithString: """
-        Markdown Viewer renders Markdown files in your default web browser when they are double-clicked, \
+        Markdown Viewer opens Markdown files in Preview, as formatted PDF documents, when they are double-clicked, \
         and provides a Quick Look preview (press Space on a Markdown file in Finder).
 
         To make double-clicking open Markdown files here, set Markdown Viewer as the default application below.

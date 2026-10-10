@@ -7,12 +7,12 @@ Markdown Viewer is a macOS application that provides two facilities for Markdown
 
 1. **Quick Look preview.** A Quick Look extension renders a Markdown document as formatted text
    when the document is selected in Finder and the Space bar is pressed.
-2. **Opening in the browser.** When a Markdown document is double-clicked, it is converted to HTML
-   and opened in the default web browser.
+2. **Opening in Preview.** When a Markdown document is double-clicked, it is converted to a
+   paginated A4 PDF and opened in Preview.
 
 Both facilities support GitHub-flavoured Markdown: tables, task lists, strikethrough, autolinks,
-footnotes and fenced code blocks. Raw HTML in a document is passed through unchanged. The rendered
-page follows the system light or dark appearance.
+footnotes and fenced code blocks. Raw HTML in a document is passed through unchanged. The Quick Look
+preview follows the system light or dark appearance; the PDF is always rendered on a white page.
 
 ## Activation
 
@@ -27,16 +27,17 @@ may be enabled or disabled in **System Settings > General > Login Items & Extens
 > **Note:** If another Quick Look extension for Markdown is installed, macOS uses only one of them.
 > The other extension should be disabled in System Settings.
 
-## Opening in the browser
+## Opening in Preview
 
-When a Markdown document is opened, Markdown Viewer writes the rendered HTML to
-`~/Library/Caches/com.invertedworld.MarkdownViewer/`, passes the file to the default browser, and
-then quits. Relative links and images are resolved against the folder that contains the original
-document, so local images are displayed. Rendered files older than seven days are removed
-automatically.
+When a Markdown document is opened, Markdown Viewer renders it with WebKit, prints it to a PDF on
+A4 paper with margins of 15 mm, passes the PDF to Preview, and then quits. The PDF is written to
+`~/Library/Caches/com.invertedworld.MarkdownViewer/`, in a folder specific to the original
+document, and carries the original document's name. Relative links and images are resolved against
+the folder that contains the original document, so local images are included. Rendered files older
+than seven days are removed automatically.
 
-The page is a snapshot of the document at the time it was opened. To see later changes, the
-document is opened again.
+The PDF is a snapshot of the document at the time it was opened. To see later changes, the document
+is opened again; Preview then reloads the updated PDF.
 
 ## Quick Look preview
 
@@ -73,7 +74,8 @@ Both components share `Shared/MarkdownRenderer.swift`, which parses the document
 enables the GitHub extensions, and wraps the resulting HTML in a page with an embedded stylesheet.
 The Quick Look extension (`QuickLook/PreviewProvider.swift`) is a data-based preview provider that
 returns this HTML to Quick Look. The application (`App/`) declares itself a viewer for the
-`net.daringfireball.markdown` type; on receiving an open request it renders the document, inserts a
-`<base>` element pointing at the document's folder, and opens the result in the default browser. The
-application waits until the browser has accepted the file before quitting, because quitting earlier
-can cancel the transfer of the file to the browser.
+`net.daringfireball.markdown` type. On receiving an open request it renders the document, inserts a
+`<base>` element pointing at the document's folder, loads the page into an off-screen WebKit view,
+and prints that view to a PDF file, which is then opened in Preview. The application waits until
+Preview has accepted the file before quitting, because quitting earlier can cancel the transfer of
+the file.

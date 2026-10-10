@@ -4,7 +4,7 @@ This file exercises the **GitHub-flavoured** features: *emphasis*, ~~strikethrou
 
 ## Table
 
-| Feature | Quick Look | Browser |
+| Feature | Quick Look | Preview |
 |:--------|:----------:|--------:|
 | Tables  | yes        | yes     |
 | Images  | remote only | yes    |
